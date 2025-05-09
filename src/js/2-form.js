@@ -1,41 +1,47 @@
-const feedbackForm = document.querySelector('.feedback-form');
+const form = document.querySelector('.feedback-form');
+const submit = document.querySelector('button');
+const localData = JSON.parse(localStorage.getItem('feedback-form-state'));
 
-checkInputStart();
+const formData = {
+  email: '',
+  message: '',
+};
 
-feedbackForm.addEventListener('input', fieldUserInfo);
-feedbackForm.addEventListener('submit', sendUserInfo);
+//localstoragede veri varsa formun içine yazmak için
+function fillData(localStorage) {
+  if (localStorage) {
+    form.elements.email.value = localStorage.email;
+    form.elements.message.value = localStorage.message;
 
-function fieldUserInfo() {
-    const formData = {
-        email: (feedbackForm.elements.email.value).trim(),
-        message: (feedbackForm.elements.message.value).trim(),
-    }
-
-    localStorage.setItem('feedback-form-state', JSON.stringify(formData));
+    formData.email = localStorage.email;
+    formData.message = localStorage.message;
+  }
 }
 
-function sendUserInfo(event) {
-    event.preventDefault();
+fillData(localData);
 
-    const email = (feedbackForm.elements.email.value).trim();
-    const message = (feedbackForm.elements.message.value).trim();
+//forma girilen inputları localstoragede saklamak için
+form.addEventListener('input', (event) => {
+  if (event.target.name === 'email') {
+    formData.email = event.target.value.trim();
+  } else {
+    formData.message = event.target.value.trim();
+  }
 
+  localStorage.setItem('feedback-form-state', JSON.stringify(formData));
+});
 
-    if (!email || !message) {
-        alert('Please, fill in all fields before sending!');
-        return;
-    }
+//form submit edilince içeriği temizlemek için
+submit.addEventListener('click', (event) => {
+  event.preventDefault();
 
-    const userInfo = { email: email, message: message };
-    console.log(userInfo);
+  if (formData.email === '' || formData.message === '') {
+    alert('Lütfen bütün alanları doldurunuz');
+  }
 
-    feedbackForm.reset();
-    localStorage.clear();
-}
-
-function checkInputStart() {
-    const localInfo = JSON.parse(localStorage.getItem("feedback-form-state")) ?? {};
-
-    feedbackForm.elements.email.value = localInfo.email || '';
-    feedbackForm.elements.message.value = localInfo.message || '';
-}
+  console.log(formData);
+  form.reset();
+  localStorage.clear();
+  formData.email = '';
+  formData.message = '';
+});
