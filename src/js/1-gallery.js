@@ -67,33 +67,26 @@ const images = [
   },
 ];
 
-const ul = document.querySelector('ul.gallery');
+const galleryEl = document.querySelector('.gallery');
 
-images.forEach((image) => {
-  const li = document.createElement('li');
-  const a = document.createElement('a');
-  const img = document.createElement('img');
+const markup = images
+  .map(
+    ({ preview, original, description }) => `
+  <li class="gallery-item">
+    <a class="gallery-link" href="${original}">
+      <img
+        class="gallery-image"
+        src="${preview}"
+        alt="${description}"
+      />
+    </a>
+  </li>`
+  )
+  .join('');
 
-  a.href = image.original;
-  a.classList.add('gallery-link');
-  img.src = image.preview;
-  img.alt = image.description;
-  img.dataset.source = image.original;
-  img.classList.add('gallery-image');
-  li.classList.add('gallery-item');
+galleryEl.innerHTML = markup;
 
-  a.appendChild(img);
-  li.appendChild(a);
-  ul.appendChild(li);
-
-  a.addEventListener('click', (event) => {
-    //linklerin fotoğrafı indirmesini engellemek için
-    event.preventDefault();
-  });
-});
-
-//SimpleLightBox kütüphanesiyle modal oluşturmak için
-const lightbox = new SimpleLightbox('.gallery li > a', {
+new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
   captionDelay: 250,
 });
